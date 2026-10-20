@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 # Captura de un área -> ~/Pictures/Screenshots + portapapeles
-dir="$HOME/Pictures/Screenshots"; mkdir -p "$dir"
-f="$dir/$(date +%F_%H-%M-%S).png"
-grim -g "$(slurp)" "$f" && wl-copy < "$f" && notify-send "Captura guardada" "$f"
+dir="${HOME}/Pictures/Screenshots"; mkdir -p "${dir}"
+f="${dir}/$(date +%F_%H-%M-%S).png"
+grim -g "$(slurp)" "${f}" && wl-copy < "${f}" && notify-send "Captura guardada" "${f}"

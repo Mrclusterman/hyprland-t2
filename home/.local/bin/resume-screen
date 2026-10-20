@@ -4,11 +4,11 @@
 : "${XDG_RUNTIME_DIR:=/run/user/$(id -u)}"  # por si se lanza fuera de la sesión
 export LC_ALL=C
 t0=$(date +%s%N)
-since=$(cat "$XDG_RUNTIME_DIR/sleep-start" 2>/dev/null || echo "$t0")  # teclado reconectado después de suspender
+since=$(cat "${XDG_RUNTIME_DIR}/sleep-start" 2>/dev/null || echo "${t0}")  # teclado reconectado después de suspender
 for _ in $(seq 30); do
   for k in /dev/input/by-id/*Apple_Internal_Keyboard*-event-kbd; do
-    t=$(stat -c %.9Y "$k" 2>/dev/null | tr -d .)
-    [ -n "$t" ] && [ "$t" -gt "$since" ] && break 2
+    t=$(stat -c %.9Y "${k}" 2>/dev/null | tr -d .)
+    [ -n "${t}" ] && [ "${t}" -gt "${since}" ] && break 2
   done
   sleep 0.1
 done

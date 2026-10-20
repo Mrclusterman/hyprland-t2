@@ -46,18 +46,18 @@ PACKAGES=(
 
 # Los archivos de texto se guardan con @HOME@/@USER@ en vez de la ruta y el usuario reales, para que
 # install funcione con cualquier usuario. Los binarios (sonido, fondo) se copian tal cual.
-to_repo()   { if grep -Iq . "$1"; then sed "s|$HOME|@HOME@|g; s|\"$USER\"|\"@USER@\"|g" "$1" > "$2"; chmod --reference="$1" "$2"; else cp -p "$1" "$2"; fi; }
-from_repo() { if grep -Iq . "$1"; then sed "s|@HOME@|$HOME|g; s|@USER@|$USER|g" "$1"; else cat "$1"; fi; }
+to_repo()   { if grep -Iq . "$1"; then sed "s|${HOME}|@HOME@|g; s|\"${USER}\"|\"@USER@\"|g" "$1" > "$2"; chmod --reference="$1" "$2"; else cp -p "$1" "$2"; fi; }
+from_repo() { if grep -Iq . "$1"; then sed "s|@HOME@|${HOME}|g; s|@USER@|${USER}|g" "$1"; else cat "$1"; fi; }
 
 capture() {
   rm -rf home system
   for f in "${HOME_FILES[@]}"; do
     mkdir -p "home/${f%/*}"
-    to_repo "$HOME/$f" "home/$f"
+    to_repo "${HOME}/${f}" "home/${f}"
   done
   for f in "${SYSTEM_FILES[@]}"; do
     mkdir -p "system${f%/*}"
-    to_repo "$f" "system$f"
+    to_repo "${f}" "system${f}"
   done
   echo "Capturados ${#HOME_FILES[@]} archivos de usuario y ${#SYSTEM_FILES[@]} de sistema."
 }
@@ -70,19 +70,19 @@ install_all() {
   echo "== Archivos de usuario (lo que ya exista se guarda como .bak)"
   for f in "${HOME_FILES[@]}"; do
     # shellcheck disable=SC2310  # from_repo en la condición es intencionado: solo compara
-    if [[ -e "$HOME/$f" ]] && ! from_repo "home/$f" | cmp -s - "$HOME/$f"; then
-      cp -p "$HOME/$f" "$HOME/$f.bak"
+    if [[ -e "${HOME}/${f}" ]] && ! from_repo "home/${f}" | cmp -s - "${HOME}/${f}"; then
+      cp -p "${HOME}/${f}" "${HOME}/${f}.bak"
     fi
-    mkdir -p "$HOME/${f%/*}"
-    from_repo "home/$f" > "$HOME/$f"
-    mode=$(stat -c %a "home/$f")
-    chmod "$mode" "$HOME/$f"
+    mkdir -p "${HOME}/${f%/*}"
+    from_repo "home/${f}" > "${HOME}/${f}"
+    mode=$(stat -c %a "home/${f}")
+    chmod "${mode}" "${HOME}/${f}"
   done
 
   echo "== Archivos de sistema"
   for f in "${SYSTEM_FILES[@]}"; do
-    mode=$(stat -c %a "system$f")
-    from_repo "system$f" | sudo install -Dm"$mode" /dev/stdin "$f"
+    mode=$(stat -c %a "system${f}")
+    from_repo "system${f}" | sudo install -Dm"${mode}" /dev/stdin "${f}"
   done
 
   echo "== GRUB: parámetros T2, menú oculto (Shift al arrancar para verlo)"

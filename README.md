@@ -1,80 +1,84 @@
 # hyprland-t2
 
-Configuración de Hyprland con aspecto de macOS para un MacBook Pro con chip T2 (MacBookPro15,4) en Arch Linux con el kernel `linux-t2`.
-Está pensada para gastar lo mínimo: sin desenfoque ni sombras, y nada se queda en segundo plano sin hacer falta.
+A macOS-style Hyprland setup for a MacBook Pro with the T2 chip (MacBookPro15,4) running Arch Linux with the `linux-t2` kernel.
+It is built to use as little power as possible: no blur or shadows, and nothing runs in the background unless it has to.
 
-## Qué incluye
+## What's included
 
-- **Barra superior (waybar) estilo macOS:** menú del sistema con el logo de Arch, título de la ventana en el centro y reloj a la derecha.
-  Cada icono abre su propio popup: volumen, brillo de pantalla y de teclado, Wi-Fi, Bluetooth, batería con modo de energía, y calendario.
-- **Spotlight** (fuzzel) con Cmd+Espacio. Se cierra con el mismo atajo o haciendo clic fuera.
-- **Finder** (Nautilus) con Cmd+E. Va sin el indexador `localsearch`; al cerrar la última ventana se paran Nautilus y gvfs.
-- **Notas rápidas** con Cmd+N: lo que escribas se añade a `~/Obsidian/Ideas/Inbox.md`.
-- **Inicio de sesión:** greetd entra solo en la sesión y hyprlock pide la contraseña. Basta con escribirla y pulsar Intro.
-- **Suspensión arreglada para T2:** sin despertares fantasma, y la pantalla vuelve justo cuando el teclado ya responde.
-- **Sonido al enchufar el cargador.**
-- **Notificaciones** (mako) y apps GTK4 con estilo macOS.
-- **Ventanas en espiral (dwindle).** El foco cambia al hacer clic, no al pasar el ratón, y los bordes son de 1 px.
+- **macOS-style top bar (waybar):** system menu with the Arch logo, window title in the centre and clock on the right.
+  Each icon opens its own popup: volume, screen and keyboard brightness, Wi-Fi, Bluetooth, battery with power mode, and calendar.
+- **Spotlight** (fuzzel) on Cmd+Space. It closes with the same shortcut or a click outside.
+- **Finder** (Nautilus) on Cmd+E. It runs without the `localsearch` indexer; closing the last window stops Nautilus and gvfs.
+- **Quick notes** on Cmd+N: whatever you type is appended to `~/Obsidian/Ideas/Inbox.md`.
+- **Login:** greetd logs straight into the session and hyprlock asks for the password. Type it and press Enter.
+- **Suspend fixed for the T2:** no phantom wake-ups, and the screen comes back only once the keyboard responds.
+- **Chime when the charger is plugged in.**
+- **Notifications** (mako) and macOS-style GTK4 apps.
+- **Spiral tiling (dwindle).** Focus follows clicks, not the mouse, and borders are 1 px.
 
-## Uso
+## Usage
 
 ```bash
-./setup.sh capture   # copia la configuración actual del equipo a home/ y system/
-./setup.sh install   # instala paquetes y aplica la configuración (pide sudo)
+./setup.sh capture   # copy the machine's current config into home/ and system/
+./setup.sh install   # install packages and apply the config (asks for sudo)
 ```
 
-`capture` guarda tu carpeta personal y tu usuario como `@HOME@` y `@USER@`.
-`install` los sustituye por los del usuario que lo ejecute, así que funciona con cualquier nombre de usuario.
+`capture` stores your home folder and username as `@HOME@` and `@USER@`.
+`install` replaces them with those of the user running it, so it works with any username.
 
-Antes de ejecutar `install` necesitas:
-- Arch arrancando con `linux-t2` (repo `[arch-mact2]`).
-- El firmware de Wi-Fi y Bluetooth de Apple en `/lib/firmware/brcm`.
-- Un usuario con sudo.
+Before running `install` you need:
+- Arch booting `linux-t2` (`[arch-mact2]` repo).
+- Apple's Wi-Fi and Bluetooth firmware in `/lib/firmware/brcm`.
+- A user with sudo.
 
-Google Chrome y Claude Code vienen del AUR y no se instalan con el script.
+Google Chrome and Claude Code come from the AUR and are not installed by the script.
 
-Para mantener el repo al día después de cambiar algo en el equipo:
+To keep the repo up to date after changing something on the machine:
 
 ```bash
 ./setup.sh capture && git add -A && git commit -m "..." && git push
 ```
 
-## Estructura
+## Layout
 
-| Ruta | Contenido |
+| Path | Contents |
 |---|---|
-| `home/.config/hypr/` | `hyprland.lua` (configuración principal en Lua), `hypridle.conf`, `hyprlock.conf` |
-| `home/.config/waybar/` | Barra y estilos |
-| `home/.local/bin/barpopup.py` | Base común de todos los popups: ventana layer-shell, estilos y lista con interruptor |
-| `home/.local/bin/*-popup`, `bright-slider`, `system-menu` | Los popups de la barra |
-| `home/.local/bin/sleep-screen`, `resume-screen` | Apagan la pantalla al suspender y la encienden cuando el teclado T2 vuelve |
-| `home/.local/bin/charger-chime` | Sonido al enchufar el cargador. Espera los eventos de udev, sin consultar en bucle |
-| `home/.local/bin/discord` | Lanzador de Discord (el oficial se queda colgado sin zenity) en Wayland y con vídeo por GPU |
-| `system/etc/greetd/` | Autologin con bloqueo y ReGreet como pantalla de acceso |
-| `system/etc/udev/rules.d/90-no-wakeup.rules`, `system/usr/lib/systemd/system-sleep/no-wifi-wakeup` | Arreglo de la suspensión |
+| `home/.config/hypr/` | `hyprland.lua` (main config, in Lua), `hypridle.conf`, `hyprlock.conf` |
+| `home/.config/waybar/` | Bar and styles |
+| `home/.local/bin/barpopup.py` | Shared base for every popup: layer-shell window, styles and toggle list |
+| `home/.local/bin/*-popup`, `bright-slider`, `system-menu` | The bar popups |
+| `home/.local/bin/sleep-screen`, `resume-screen` | Turn the screen off on suspend and back on once the T2 keyboard returns |
+| `home/.local/bin/charger-chime` | Charger chime. Waits for udev events instead of polling |
+| `home/.local/bin/discord` | Discord launcher (the official one hangs without zenity) on Wayland with GPU video |
+| `system/etc/greetd/` | Autologin with lock, and ReGreet as the login screen |
+| `system/etc/udev/rules.d/90-no-wakeup.rules`, `system/usr/lib/systemd/system-sleep/no-wifi-wakeup` | Suspend fix |
 
-## Atajos
+## Shortcuts
 
-| Atajo | Acción |
+| Shortcut | Action |
 |---|---|
-| Cmd+Espacio | Spotlight (abrir y cerrar) |
+| Cmd+Space | Spotlight (open and close) |
 | Cmd+E | Finder (Nautilus) |
-| Cmd+N | Nota rápida |
-| Cmd+Intro | Terminal (kitty) |
+| Cmd+N | Quick note |
+| Cmd+Enter | Terminal (kitty) |
 | Cmd+B | Chrome |
-| Cmd+Q | Cerrar ventana |
-| Cmd+F | Pantalla completa |
-| Cmd+L | Bloquear |
-| Cmd+Shift+S | Captura de una zona (se guarda en `~/Pictures/Screenshots` y se copia al portapapeles) |
-| Cmd+1…9 / Cmd+Shift+1…9 | Ir a un escritorio / mover la ventana a ese escritorio |
-| Cmd+Ctrl+↑↓ / ←→ | Brillo de pantalla / de teclado (la Touch Bar está rota) |
-| Cmd+Alt+↑↓ / M | Volumen / silencio |
-| Shift al arrancar | Menú de GRUB (Esc está en la Touch Bar) |
+| Cmd+Q | Close window |
+| Cmd+F | Fullscreen |
+| Cmd+L | Lock |
+| Cmd+Shift+S | Screenshot of an area (saved to `~/Pictures/Screenshots` and copied to the clipboard) |
+| Cmd+1…9 / Cmd+Shift+1…9 | Go to a workspace / move the window to that workspace |
+| Cmd+Ctrl+↑↓ / ←→ | Screen / keyboard brightness (the Touch Bar is broken) |
+| Cmd+Alt+↑↓ / M | Volume / mute |
+| Shift at boot | GRUB menu (Esc lives on the Touch Bar) |
 
-## Particularidades del T2
+## T2 quirks
 
-- **Esc y teclas F:** no existen porque la Touch Bar está rota. Por eso los cierres van con el mismo atajo que abre o con un clic fuera.
-- **Brillo:** `brightnessctl` siempre lleva `-d acpi_video0`. Sin él actúa sobre la Touch Bar.
-- **Suspensión:** el Wi-Fi (`brcmfmac`) se vuelve a dar permiso para despertar el equipo en cada ciclo. Un script de systemd-sleep se lo quita justo antes de suspender.
-- **Teclado al despertar:** el T2 lo vuelve a conectar unos 0,5 s después de despertar. `resume-screen` espera a que vuelva para encender la pantalla.
-- **Touch ID:** no funciona en Linux, porque el sensor lo controla el Secure Enclave del T2.
+- **Esc and F keys:** they don't exist because the Touch Bar is broken. That's why everything closes with the shortcut that opened it or a click outside.
+- **Brightness:** `brightnessctl` always takes `-d acpi_video0`. Without it, it changes the Touch Bar.
+- **Suspend:** the Wi-Fi (`brcmfmac`) gets its wake-up permission back on every cycle. A systemd-sleep script removes it right before suspending.
+- **Keyboard on resume:** the T2 reconnects it about 0.5 s after waking. `resume-screen` waits for it before turning the screen on.
+- **Touch ID:** doesn't work on Linux, because the T2's Secure Enclave controls the sensor.
+
+## License
+
+[MIT](LICENSE)

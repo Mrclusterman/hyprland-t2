@@ -1,0 +1,7 @@
+{
+  "title": "Hyprland on a T2 Mac",
+  "kind": "Linux desktop setup",
+  "description": "A macOS-style Hyprland desktop for a T2 MacBook Pro on Arch Linux: a Lua config, Python and GTK popups for the bar, and a udev and systemd fix for suspend on Apple's T2 hardware, all installed by one Bash script.",
+  "technologies": ["Lua", "Python", "Bash", "Linux"],
+  "imageAlt": "two code windows tiled on the desktop, with the bar's calendar popup open"
+}

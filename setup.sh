@@ -9,7 +9,8 @@
 # Requisitos previos de install: Arch con linux-t2 arrancando, firmware WiFi/BT de Apple en /lib/firmware/brcm,
 # usuario con sudo. Google Chrome y Claude Code vienen del AUR y no se instalan aquí.
 set -euo pipefail
-cd "$(dirname "$(readlink -f "$0")")"
+script=$(readlink -f "$0")
+cd "${script%/*}"
 
 # Rutas relativas a $HOME
 HOME_FILES=(
@@ -51,11 +52,11 @@ from_repo() { if grep -Iq . "$1"; then sed "s|@HOME@|$HOME|g; s|@USER@|$USER|g" 
 capture() {
   rm -rf home system
   for f in "${HOME_FILES[@]}"; do
-    mkdir -p "home/$(dirname "$f")"
+    mkdir -p "home/${f%/*}"
     to_repo "$HOME/$f" "home/$f"
   done
   for f in "${SYSTEM_FILES[@]}"; do
-    mkdir -p "system$(dirname "$f")"
+    mkdir -p "system${f%/*}"
     to_repo "$f" "system$f"
   done
   echo "Capturados ${#HOME_FILES[@]} archivos de usuario y ${#SYSTEM_FILES[@]} de sistema."
@@ -68,15 +69,20 @@ install_all() {
 
   echo "== Archivos de usuario (lo que ya exista se guarda como .bak)"
   for f in "${HOME_FILES[@]}"; do
-    [ -e "$HOME/$f" ] && ! from_repo "home/$f" | cmp -s - "$HOME/$f" && cp -p "$HOME/$f" "$HOME/$f.bak"
-    mkdir -p "$HOME/$(dirname "$f")"
+    # shellcheck disable=SC2310  # from_repo en la condición es intencionado: solo compara
+    if [[ -e "$HOME/$f" ]] && ! from_repo "home/$f" | cmp -s - "$HOME/$f"; then
+      cp -p "$HOME/$f" "$HOME/$f.bak"
+    fi
+    mkdir -p "$HOME/${f%/*}"
     from_repo "home/$f" > "$HOME/$f"
-    chmod "$(stat -c %a "home/$f")" "$HOME/$f"
+    mode=$(stat -c %a "home/$f")
+    chmod "$mode" "$HOME/$f"
   done
 
   echo "== Archivos de sistema"
   for f in "${SYSTEM_FILES[@]}"; do
-    from_repo "system$f" | sudo install -Dm"$(stat -c %a "system$f")" /dev/stdin "$f"
+    mode=$(stat -c %a "system$f")
+    from_repo "system$f" | sudo install -Dm"$mode" /dev/stdin "$f"
   done
 
   echo "== GRUB: parámetros T2, menú oculto (Shift al arrancar para verlo)"

@@ -1,6 +1,7 @@
 #!/bin/sh
 # Tras suspender (hypridle after_sleep_cmd): el teclado T2 se reconecta ~0,5 s después de la pantalla.
 # Se espera a que reaparezca (como mucho 3 s) y entonces se enciende la pantalla, así todo vuelve a la vez.
+: "${XDG_RUNTIME_DIR:=/run/user/$(id -u)}"  # por si se lanza fuera de la sesión
 export LC_ALL=C
 t0=$(date +%s%N)
 since=$(cat "$XDG_RUNTIME_DIR/sleep-start" 2>/dev/null || echo "$t0")  # teclado reconectado después de suspender

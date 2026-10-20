@@ -19,7 +19,7 @@ HOME_FILES=(
   .config/gtk-3.0/settings.ini .config/gtk-4.0/settings.ini .config/gtk-4.0/gtk.css
   .config/chrome-flags.conf
   .local/bin/barpopup.py .local/bin/bright-slider .local/bin/wifi-popup .local/bin/bt-popup
-  .local/bin/battery-popup .local/bin/cal-popup .local/bin/apple-menu .local/bin/idea-popup
+  .local/bin/battery-popup .local/bin/cal-popup .local/bin/system-menu .local/bin/idea-popup
   .local/bin/sleep-screen .local/bin/resume-screen .local/bin/charger-chime .local/bin/discord
   .local/bin/shot-area .local/bin/ui-mem
   .local/share/sounds/charger.wav .local/share/wallpapers/spiderman.jpg
@@ -43,14 +43,20 @@ PACKAGES=(
   discord obsidian
 )
 
+# Los archivos de texto se guardan con @HOME@/@USER@ en vez de la ruta y el usuario reales, para que
+# install funcione con cualquier usuario. Los binarios (sonido, fondo) se copian tal cual.
+to_repo()   { if grep -Iq . "$1"; then sed "s|$HOME|@HOME@|g; s|\"$USER\"|\"@USER@\"|g" "$1" > "$2"; chmod --reference="$1" "$2"; else cp -p "$1" "$2"; fi; }
+from_repo() { if grep -Iq . "$1"; then sed "s|@HOME@|$HOME|g; s|@USER@|$USER|g" "$1"; else cat "$1"; fi; }
+
 capture() {
+  rm -rf home system
   for f in "${HOME_FILES[@]}"; do
     mkdir -p "home/$(dirname "$f")"
-    cp -p "$HOME/$f" "home/$f"
+    to_repo "$HOME/$f" "home/$f"
   done
   for f in "${SYSTEM_FILES[@]}"; do
     mkdir -p "system$(dirname "$f")"
-    cp -p "$f" "system$f"
+    to_repo "$f" "system$f"
   done
   echo "Capturados ${#HOME_FILES[@]} archivos de usuario y ${#SYSTEM_FILES[@]} de sistema."
 }
@@ -62,14 +68,15 @@ install_all() {
 
   echo "== Archivos de usuario (lo que ya exista se guarda como .bak)"
   for f in "${HOME_FILES[@]}"; do
-    [ -e "$HOME/$f" ] && ! cmp -s "home/$f" "$HOME/$f" && cp -p "$HOME/$f" "$HOME/$f.bak"
+    [ -e "$HOME/$f" ] && ! from_repo "home/$f" | cmp -s - "$HOME/$f" && cp -p "$HOME/$f" "$HOME/$f.bak"
     mkdir -p "$HOME/$(dirname "$f")"
-    cp -p "home/$f" "$HOME/$f"
+    from_repo "home/$f" > "$HOME/$f"
+    chmod "$(stat -c %a "home/$f")" "$HOME/$f"
   done
 
   echo "== Archivos de sistema"
   for f in "${SYSTEM_FILES[@]}"; do
-    sudo install -Dm"$(stat -c %a "system$f")" "system$f" "$f"
+    from_repo "system$f" | sudo install -Dm"$(stat -c %a "system$f")" /dev/stdin "$f"
   done
 
   echo "== GRUB: parámetros T2, menú oculto (Shift al arrancar para verlo)"

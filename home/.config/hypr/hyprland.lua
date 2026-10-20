@@ -1,4 +1,4 @@
--- Hyprland (config en Lua, 0.55+) · generado por setup-hyprland-t2.sh
+-- Hyprland (config en Lua, 0.55+) · MacBook Pro T2 · repo: github.com/Mrclusterman/hyprland-t2
 -- Errores de secciones individuales -> ~/.cache/hypr-lua-errors.log
 
 local HOME     = os.getenv("HOME") or ""
@@ -99,7 +99,7 @@ end)
 
 -- Popups de brillo/volumen: sin animación
 try("layer rules", function()
-  hl.layer_rule({ match = { namespace = "bright-slider" }, no_anim = true })
+  hl.layer_rule({ match = { namespace = "barpopup" }, no_anim = true })
   hl.layer_rule({ match = { namespace = "idea" }, no_anim = true })
 end)
 

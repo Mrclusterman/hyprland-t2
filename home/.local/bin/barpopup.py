@@ -1,4 +1,4 @@
-"""Base común de los popups de waybar (bright-slider, wifi-popup, bt-popup, battery-popup, cal-popup, apple-menu): estilo Centro de control de macOS.
+"""Base común de los popups de waybar (bright-slider, wifi-popup, bt-popup, battery-popup, cal-popup, system-menu, idea-popup): estilo Centro de control de macOS.
 Un solo popup a la vez; clic de nuevo en el mismo icono, sacar el ratón o Esc = cerrar."""
 import json, os, signal, subprocess, sys, threading
 import gi
@@ -6,7 +6,7 @@ gi.require_version("Gtk", "3.0")
 gi.require_version("GtkLayerShell", "0.1")
 from gi.repository import Gtk, Gdk, GLib, GLibUnix, GtkLayerShell
 
-PIDFILE = f"/run/user/{os.getuid()}/bright-slider.pid"
+PIDFILE = f"/run/user/{os.getuid()}/barpopup.pid"
 
 # Selectores también en :backdrop (el popup nunca tiene foco y Adwaita lo apagaría)
 BASE_CSS = """
@@ -77,7 +77,7 @@ def window(kind, width, css="", keyboard=False, top=None, close_on_leave=True):
 
     win = Gtk.Window()
     GtkLayerShell.init_for_window(win)
-    GtkLayerShell.set_namespace(win, "bright-slider")  # layer rule no_anim en hyprland.lua
+    GtkLayerShell.set_namespace(win, "barpopup")  # layer rule no_anim en hyprland.lua
     GtkLayerShell.set_layer(win, GtkLayerShell.Layer.OVERLAY)
     GtkLayerShell.set_anchor(win, GtkLayerShell.Edge.TOP, True)
     GtkLayerShell.set_anchor(win, GtkLayerShell.Edge.LEFT, True)

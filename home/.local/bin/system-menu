@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Menú Apple de la barra (estilo macOS): acerca de y apagado (los ajustes rápidos están en sus iconos).
+"""Menú del sistema (logo de Arch en la barra, estilo menú Apple): acerca de y apagado (los ajustes rápidos están en sus iconos).
 Apagar/Reiniciar/Cerrar sesión piden un segundo clic para confirmar."""
 import os, subprocess
 from barpopup import Gtk, quit_, window, label
@@ -25,7 +25,7 @@ def on_row(_, row):
     subprocess.Popen(cmd, start_new_session=True)
     quit_()
 
-win, inner = window("apple", WIDTH)
+win, inner = window("menu", WIDTH)
 menu = Gtk.ListBox(selection_mode=Gtk.SelectionMode.NONE)
 for item in ITEMS:
     if item is None:

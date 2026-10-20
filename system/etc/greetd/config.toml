@@ -8,4 +8,4 @@ user = "greeter"
 # Autologin solo al encender; Hyprland bloquea al momento con hyprlock
 [initial_session]
 command = "env HYPR_AUTOLOCK=1 start-hyprland"
-user = "mrclusterman"
+user = "@USER@"

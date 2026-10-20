@@ -10,7 +10,7 @@
   "custom/menu": {
     "format": "<span font_size='110%'>\uf303</span>",
     "tooltip-format": "Menú del sistema",
-    "on-click": "~/.local/bin/apple-menu"
+    "on-click": "~/.local/bin/system-menu"
   },
   "hyprland/workspaces": { "format": "{id}", "on-click": "activate", "disable-scroll": true },
   "hyprland/window": { "max-length": 48, "separate-outputs": true },

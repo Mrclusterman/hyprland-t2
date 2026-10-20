@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+"""Menú Apple de la barra (estilo macOS): acerca de y apagado (los ajustes rápidos están en sus iconos).
+Apagar/Reiniciar/Cerrar sesión piden un segundo clic para confirmar."""
+import os, subprocess
+from barpopup import Gtk, quit_, window, label
+
+WIDTH = 240
+ITEMS = [  # (texto, comando, confirmar); None = separador
+    ("Acerca de este Mac", ["kitty", "--hold", "fastfetch"], False),
+    None,
+    ("Suspender", ["systemctl", "suspend"], False),
+    ("Reiniciar…", ["systemctl", "reboot"], True),
+    ("Apagar…", ["systemctl", "poweroff"], True),
+    None,
+    ("Bloquear pantalla", ["loginctl", "lock-session"], False),
+    ("Cerrar sesión…", ["loginctl", "terminate-session", os.environ.get("XDG_SESSION_ID", "")], True),
+]
+
+def on_row(_, row):
+    text, cmd, confirm = row.item
+    if confirm and not row.armed:
+        row.armed = True
+        row.get_child().set_text(f"¿{text.rstrip('…')}? Clic otra vez")
+        return
+    subprocess.Popen(cmd, start_new_session=True)
+    quit_()
+
+win, inner = window("apple", WIDTH)
+menu = Gtk.ListBox(selection_mode=Gtk.SelectionMode.NONE)
+for item in ITEMS:
+    if item is None:
+        menu.add(Gtk.Separator())
+        menu.get_children()[-1].set_activatable(False)
+        continue
+    row = Gtk.ListBoxRow()
+    row.add(label(item[0], xalign=0))
+    row.item, row.armed = item, False
+    menu.add(row)
+menu.connect("row-activated", on_row)
+inner.add(menu)
+win.show_all()
+Gtk.main()

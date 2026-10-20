@@ -1,0 +1,56 @@
+/* Estilo macOS sin efectos: sin blur, sin sombras, sin transiciones */
+* {
+  font-family: "Adwaita Sans", sans-serif;
+  transition: none;
+  animation: none;
+  box-shadow: none;
+  text-shadow: none;
+  outline: none;
+}
+
+window { background: #000; }
+label  { color: #ffffff; }
+
+/* Panel de login y reloj: cristal oscuro translúcido (alpha, no blur) */
+frame.background {
+  background: rgba(20, 20, 24, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  padding: 10px 14px;
+}
+
+/* Inputs tipo píldora */
+entry, passwordentry, combobox button, dropdown button {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  border-radius: 999px;
+  min-height: 34px;
+  padding: 0 14px;
+}
+entry:focus-within, passwordentry:focus-within {
+  border-color: rgba(255, 255, 255, 0.60);
+  background: rgba(255, 255, 255, 0.24);
+}
+entry text, passwordentry text { color: #ffffff; caret-color: #ffffff; }
+entry image, passwordentry image { color: rgba(255, 255, 255, 0.7); }
+
+/* Botones */
+button {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  min-height: 32px;
+  padding: 0 18px;
+}
+button:hover, button:focus { background: rgba(255, 255, 255, 0.28); }
+button.suggested-action        { background: #0a84ff; }
+button.suggested-action:hover  { background: #3a9bff; }
+button.destructive-action      { background: rgba(255, 255, 255, 0.14); }
+button.destructive-action:hover { background: rgba(255, 69, 58, 0.75); }
+
+popover contents, popover arrow {
+  background: rgba(30, 30, 34, 0.96);
+  border-radius: 12px;
+}

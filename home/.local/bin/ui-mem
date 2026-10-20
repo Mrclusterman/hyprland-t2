@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Memoria residente (RSS) de los componentes de la interfaz
+printf '%-18s %9s\n' PROCESO "RSS(MiB)"
+ps -C Hyprland,waybar,mako,swaybg,hypridle,hyprpolkitagent -o comm=,rss= \
+  | awk '{printf "%-18s %9.1f\n",$1,$2/1024; t+=$2} END{printf "%-18s %9.1f\n","TOTAL",t/1024}'
+echo; free -h | sed -n 1,2p

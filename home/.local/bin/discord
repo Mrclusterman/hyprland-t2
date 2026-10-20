@@ -1,0 +1,5 @@
+#!/bin/sh
+# Lanzador de Discord: el de /usr/bin usa zenity (no instalado) y se queda colgado; aquí sin zenity y en Wayland nativo
+dir=$(/usr/share/discord/updater_bootstrap --no-zenity "$HOME/.config/discord" stable https://updates.discord.com/ 2>/dev/null) || exit 2
+# Vídeo/streams por GPU (VA-API) en vez de CPU
+exec "$HOME/.config/discord/$dir/Discord" --ozone-platform-hint=auto --enable-features=AcceleratedVideoDecodeLinuxGL,AcceleratedVideoDecodeLinuxZeroCopyGL,AcceleratedVideoEncoder "$@"

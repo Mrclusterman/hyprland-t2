@@ -1,0 +1,4 @@
+#!/bin/sh
+# brcmfmac reactiva el WiFi como fuente de despertar en cada ciclo; quitarlo justo antes de suspender
+[ "$1" = pre ] && echo disabled > /sys/bus/pci/devices/0000:01:00.0/power/wakeup
+exit 0

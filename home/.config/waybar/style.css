@@ -1,0 +1,22 @@
+/* Barra de menú estilo macOS: ancho completo, plana, sin blur */
+* {
+  font-family: "Adwaita Sans", "JetBrainsMono Nerd Font Propo", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+}
+window#waybar { background: rgba(18, 18, 22, 0.88); color: #f2f2f7; }
+
+#workspaces button { padding: 0 8px; margin: 3px 1px; color: #8e8e93; background: transparent; border-radius: 6px; }
+#workspaces button.active { color: #ffffff; background: rgba(255, 255, 255, 0.18); }
+#workspaces button:hover  { color: #ffffff; background: rgba(255, 255, 255, 0.10); }
+
+#window { font-weight: 700; padding: 0 10px; }
+#clock, #wireplumber, #backlight, #custom-kbd, #bluetooth, #network, #battery, #tray { padding: 0 10px; }
+#battery.warning  { color: #ff9f0a; }
+#battery.critical { color: #ff453a; }
+#network.disconnected, #wireplumber.muted, #bluetooth.off, #bluetooth.disabled { color: #8e8e93; }
+
+#custom-menu { padding: 0 12px 0 14px; color: #ffffff; }

@@ -1,0 +1,15 @@
+#!/bin/sh
+# Sonido al enchufar el cargador, como macOS. udevadm espera eventos del kernel sin consumir CPU.
+sound="$HOME/.local/share/sounds/charger.wav"
+prev=$(cat /sys/class/power_supply/ADP1/online)  # estado inicial: no sonar al arrancar
+udevadm monitor --udev --subsystem-match=power_supply --property | while read -r line; do
+  case "$line" in
+    POWER_SUPPLY_NAME=ADP1) adp=1 ;;
+    POWER_SUPPLY_ONLINE=*)
+      [ "$adp" = 1 ] || continue
+      now=${line#*=}
+      [ "$now" = 1 ] && [ "$prev" != 1 ] && pw-play --volume 0.3 "$sound" &
+      prev=$now ;;
+    "") adp= ;;  # fin de evento
+  esac
+done

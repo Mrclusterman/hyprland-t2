@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+"""Popup Wi-Fi estilo Centro de control de macOS, bajo el icono de waybar.
+Clic en una red = conectar (pide contraseña si hace falta). Clic de nuevo en el icono o sacar el ratón = cerrar."""
+import re, subprocess
+from barpopup import Gtk, GLib, sh, run, background, quit_, window, ListPopup, footer_button
+
+WIDTH = 300
+SIGNAL_ICONS = ["\U000f091f", "\U000f0922", "\U000f0925", "\U000f0928"]
+LOCK = "\U000f033e"
+
+def split_terse(line):
+    # nmcli -t escapa ':' como '\:' dentro de los campos
+    return [f.replace("\\:", ":") for f in re.split(r"(?<!\\):", line)]
+
+def scan():
+    sh("nmcli", "dev", "wifi", "rescan")
+    out = run("nmcli", "-t", "-f", "IN-USE,SSID,SIGNAL,SECURITY", "dev", "wifi", "list")
+    nets = {}
+    for line in out.splitlines():
+        inuse, ssid, sig, sec = split_terse(line)[:4]
+        if ssid and (ssid not in nets or inuse == "*" or int(sig) > nets[ssid][1]):
+            nets[ssid] = (inuse == "*", int(sig or 0), sec not in ("", "--"))
+    known = set(run("nmcli", "-t", "-f", "NAME", "con", "show").splitlines())
+    return sorted(((s, *v, s in known) for s, v in nets.items()), key=lambda n: (not n[1], -n[2]))
+
+def refresh(*_):
+    if not ui.toggle.get_active():
+        ui.clear("Wi-Fi desactivado")
+        return
+    ui.busy(True)
+    background(scan, lambda nets: (ui.busy(False), fill(nets)))
+
+def fill(nets):
+    ui.clear(None if nets else "No hay redes")
+    for ssid, active, sig, secure, known in nets:
+        ui.add_row(SIGNAL_ICONS[min(sig // 25, 3)], ssid, active, (ssid, active, secure, known),
+                   [LOCK] if secure else [])
+
+def connect_net(ssid, known, password=None):
+    ui.busy(True)
+    if known and password is None:
+        cmd = ["nmcli", "con", "up", "id", ssid]
+    else:
+        cmd = ["nmcli", "dev", "wifi", "connect", ssid] + (["password", password] if password else [])
+    def done(r):
+        if r.returncode:
+            ui.busy(False, (r.stderr or r.stdout).strip().split("\n")[-1][:120])
+        else:
+            refresh()
+    background(lambda: sh(*cmd), done)
+
+def ask_password(row, ssid):
+    box = row.get_child()
+    if len(box.get_children()) > 1:
+        return
+    entry = Gtk.Entry(visibility=False, placeholder_text="Contraseña")
+    entry.connect("activate", lambda e: connect_net(ssid, False, e.get_text()))
+    box.add(entry)
+    box.show_all()
+    entry.grab_focus()
+
+def on_row(row):
+    ssid, active, secure, known = row.data
+    if active:
+        return
+    if secure and not known:
+        ask_password(row, ssid)
+    else:
+        connect_net(ssid, known)
+
+def on_toggle(on):
+    run("nmcli", "radio", "wifi", "on" if on else "off")
+    GLib.timeout_add(1500 if on else 0, refresh)
+
+def open_settings():
+    subprocess.Popen(["kitty", "--class", "wifi-config", "-e", "nmtui"], start_new_session=True)
+    quit_()
+
+win, inner = window("wifi", WIDTH, keyboard=True)  # teclado: contraseñas
+ui = ListPopup(inner, "Wi-Fi", run("nmcli", "radio", "wifi").strip() == "enabled", on_toggle, on_row)
+footer_button(inner, "Configuración de red…", open_settings)
+win.show_all()
+refresh()
+Gtk.main()

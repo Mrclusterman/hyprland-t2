@@ -1,0 +1,73 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 28,
+  "spacing": 4,
+  "modules-left": ["custom/menu", "hyprland/workspaces"],
+  "modules-center": ["hyprland/window"],
+  "modules-right": ["wireplumber", "backlight", "custom/kbd", "bluetooth", "network", "battery", "tray", "clock"],
+
+  "custom/menu": {
+    "format": "<span font_size='110%'>\uf303</span>",
+    "tooltip-format": "Menú del sistema",
+    "on-click": "~/.local/bin/apple-menu"
+  },
+  "hyprland/workspaces": { "format": "{id}", "on-click": "activate", "disable-scroll": true },
+  "hyprland/window": { "max-length": 48, "separate-outputs": true },
+
+  "clock": {
+    "interval": 60,
+    "locale": "es_ES.UTF-8",
+    "format": "{:L%a %d %b  %H:%M}",
+    "tooltip": false,
+    "on-click": "~/.local/bin/cal-popup"
+  },
+  "wireplumber": {
+    "format": "<span font_size='110%'>\uf028</span>  {volume}%",
+    "format-muted": "<span font_size='110%'>\uf026</span>  mute",
+    "tooltip-format": "Sonido (clic: ajustar · clic derecho: silenciar)",
+    "on-click": "~/.local/bin/bright-slider volume",
+    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+  },
+  "backlight": {
+    "device": "acpi_video0",
+    "format": "<span font_size='110%'>\udb80\udcdf</span>  {percent}%",
+    "tooltip-format": "Pantalla (clic para ajustar)",
+    "on-click": "~/.local/bin/bright-slider screen"
+  },
+  "custom/kbd": {
+    "exec": "brightnessctl -d apple::kbd_backlight -m | cut -d, -f4",
+    "interval": "once",
+    "signal": 8,
+    "format": "<span font_size='110%'>\uf11c</span>",
+    "tooltip-format": "Teclado (clic para ajustar)",
+    "on-click": "~/.local/bin/bright-slider kbd"
+  },
+  "network": {
+    "interval": 10,
+    "format-wifi": "<span font_size='110%'>\uf1eb</span>",
+    "format-ethernet": "ETH",
+    "format-disconnected": "<span font_size='110%'>\uf1eb</span>  --",
+    "tooltip-format": "{essid} {ipaddr} (clic: redes Wi-Fi)",
+    "on-click": "~/.local/bin/wifi-popup"
+  },
+  "bluetooth": {
+    "format": "<span font_size='110%'>\udb80\udcaf</span>",
+    "format-connected": "<span font_size='110%'>\udb80\udcb1</span>",
+    "format-off": "<span font_size='110%'>\udb80\udcb2</span>",
+    "format-disabled": "<span font_size='110%'>\udb80\udcb2</span>",
+    "tooltip-format": "Bluetooth (clic: dispositivos)",
+    "tooltip-format-connected": "{device_alias} (clic: dispositivos)",
+    "on-click": "~/.local/bin/bt-popup"
+  },
+  "battery": {
+    "interval": 30,
+    "states": { "warning": 25, "critical": 12 },
+    "format": "<span font_size='110%'>{icon}</span>  {capacity}%",
+    "format-charging": "<span font_size='110%'>\uf0e7</span>  {capacity}%",
+    "format-icons": ["\uf244", "\uf243", "\uf242", "\uf241", "\uf240"],
+    "tooltip-format": "{timeTo} (clic: batería y modo de energía)",
+    "on-click": "~/.local/bin/battery-popup"
+  },
+  "tray": { "spacing": 8 }
+}

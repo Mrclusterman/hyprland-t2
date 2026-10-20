@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+"""Popup calendario estilo macOS bajo el reloj de waybar.
+Flechas o rueda del ratón = cambiar de mes, punto = volver a hoy. Clic de nuevo, sacar el ratón o Esc = cerrar."""
+import calendar, datetime, locale
+from barpopup import Gtk, Gdk, window, label
+
+locale.setlocale(locale.LC_TIME, "")  # nombres de días/meses en español (LANG del sistema)
+WIDTH = 300
+TODAY = datetime.date.today()
+
+win, inner = window("calendar", WIDTH, """
+.weekday, .weekday:backdrop { color: #ff453a; font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+.bigday, .bigday:backdrop { font-size: 40px; font-weight: 300; }
+.sub, .sub:backdrop { color: #8e8e93; font-size: 13px; }
+.month, .month:backdrop { font-size: 15px; font-weight: 700; }
+.year, .year:backdrop { color: #8e8e93; font-size: 15px; }
+.dow, .dow:backdrop { color: #8e8e93; font-size: 11px; font-weight: 700; }
+.week, .week:backdrop { color: rgba(142,142,147,0.55); font-size: 10px; }
+button.nav, button.nav:backdrop { background: transparent; border: none; box-shadow: none; color: #8e8e93;
+  min-width: 24px; min-height: 24px; padding: 0; border-radius: 12px; }
+button.nav label { color: #8e8e93; font-size: 15px; }
+button.nav:hover { background: rgba(255,255,255,0.10); }
+button.nav:hover label { color: #f2f2f7; }
+button.day, button.day:backdrop { background: transparent; border: none; box-shadow: none;
+  min-width: 32px; min-height: 32px; padding: 0; border-radius: 16px; }
+button.day:hover { background: rgba(255,255,255,0.10); }
+button.day label { font-size: 13px; }
+button.weekend label { color: #8e8e93; }
+button.other label { color: rgba(242,242,247,0.25); }
+button.today, button.today:backdrop, button.today:hover { background: #ff453a; }
+button.today label { color: #ffffff; font-weight: 700; }
+button.selected, button.selected:backdrop { background: rgba(255,255,255,0.16); }
+""")
+
+# Cabecera: hoy en grande (como el widget de macOS)
+inner.add(label(TODAY.strftime("%A").upper(), "weekday", xalign=0))
+big = Gtk.Box(spacing=10)
+big.pack_start(label(str(TODAY.day), "bigday", xalign=0), False, False, 0)
+big.pack_start(label(TODAY.strftime("%B %Y\nSemana %V"), "sub", xalign=0, valign=Gtk.Align.CENTER), False, False, 0)
+inner.add(big)
+inner.add(Gtk.Separator())
+
+# Barra de mes: «Octubre 2026   ‹ • ›»
+nav = Gtk.Box(spacing=2)
+month_lbl, year_lbl = label("", "month"), label("", "year")
+nav.pack_start(month_lbl, False, False, 0)
+nav.pack_start(year_lbl, False, False, 4)
+def nav_button(text, step):
+    b = Gtk.Button(label=text, relief=Gtk.ReliefStyle.NONE)
+    b.get_style_context().add_class("nav")
+    b.connect("clicked", lambda *_: show(step))
+    return b
+for text, step in (("›", 1), ("•", 0), ("‹", -1)):  # pack_end: orden inverso
+    nav.pack_end(nav_button(text, step), False, False, 0)
+inner.add(nav)
+
+grid = Gtk.Grid(column_homogeneous=True, row_spacing=2)
+inner.add(grid)
+
+view = [TODAY.year, TODAY.month]
+selected = [TODAY]
+
+def show(step):
+    """step: -1/+1 = mes anterior/siguiente, 0 = mes actual."""
+    if step == 0:
+        view[:] = [TODAY.year, TODAY.month]
+    else:
+        y, m = divmod(view[0] * 12 + view[1] - 1 + step, 12)
+        view[:] = [y, m + 1]
+    draw()
+
+def select(day):
+    selected[0] = day
+    draw()
+
+def draw():
+    y, m = view
+    month_lbl.set_text(datetime.date(y, m, 1).strftime("%B").capitalize())
+    year_lbl.set_text(str(y))
+    for c in grid.get_children():
+        grid.remove(c)
+    grid.attach(label("", "week"), 0, 0, 1, 1)
+    for i in range(7):  # lun..dom en el idioma del sistema
+        grid.attach(label(calendar.day_abbr[i][:2].upper(), "dow"), i + 1, 0, 1, 1)
+    for r, week in enumerate(calendar.Calendar().monthdatescalendar(y, m), start=1):
+        grid.attach(label(str(week[0].isocalendar()[1]), "week"), 0, r, 1, 1)
+        for c, d in enumerate(week, start=1):
+            b = Gtk.Button(label=str(d.day), relief=Gtk.ReliefStyle.NONE)
+            ctx = b.get_style_context()
+            ctx.add_class("day")
+            if d.month != m:
+                ctx.add_class("other")
+            elif d.weekday() >= 5:
+                ctx.add_class("weekend")
+            if d == TODAY:
+                ctx.add_class("today")
+            elif d == selected[0]:
+                ctx.add_class("selected")
+            b.connect("clicked", lambda _, d=d: select(d))
+            grid.attach(b, c, r, 1, 1)
+    grid.show_all()
+
+scroll_acc = [0.0]
+def on_scroll(_, e):
+    # Trackpad: acumula deltas suaves para cambiar un mes por gesto, no decenas
+    ok, _dx, dy = e.get_scroll_deltas()
+    if not ok:
+        dy = {Gdk.ScrollDirection.DOWN: 1, Gdk.ScrollDirection.UP: -1}.get(e.direction, 0)
+    scroll_acc[0] += dy
+    if abs(scroll_acc[0]) >= 1:
+        show(1 if scroll_acc[0] > 0 else -1)
+        scroll_acc[0] = 0.0
+
+win.add_events(Gdk.EventMask.SCROLL_MASK | Gdk.EventMask.SMOOTH_SCROLL_MASK)
+win.connect("scroll-event", on_scroll)
+draw()
+win.show_all()
+Gtk.main()

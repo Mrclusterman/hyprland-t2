@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+"""Popup de batería estilo macOS bajo el icono de waybar: carga, tiempo restante, salud y modo de energía.
+Clic de nuevo en el icono, sacar el ratón o Esc = cerrar."""
+from barpopup import Gtk, GLib, run, window, label, ListPopup
+
+WIDTH = 280
+BAT = "/sys/class/power_supply/BAT0/"
+PROFILES = [  # (perfil de power-profiles-daemon, texto, icono)
+    ("power-saver", "Ahorro de energía", "\U000f032a"),
+    ("balanced", "Equilibrado", "\U000f05d1"),
+    ("performance", "Alto rendimiento", "\U000f04c5"),
+]
+
+def read(name):
+    with open(BAT + name) as f:
+        return f.read().strip()
+
+def hours(h):
+    return f"{int(h)} h {round(h % 1 * 60)} min" if h >= 1 else f"{round(h * 60)} min"
+
+def battery():
+    """(porcentaje, texto de estado, salud %). Usa charge_* porque 'capacity' aquí va contra la de diseño."""
+    now, full, design = (int(read(f)) for f in ("charge_now", "charge_full", "charge_full_design"))
+    current, status = int(read("current_now")), read("status")
+    pct = round(100 * now / full)
+    if status == "Charging" and current:
+        text = f"Cargando · {hours((full - now) / current)} hasta completar"
+    elif status == "Discharging" and current:
+        text = f"Con batería · quedan {hours(now / current)}"
+    elif status in ("Full", "Not charging"):
+        text = "Cargada · conectada a la corriente"
+    else:
+        text = "Calculando…"
+    return pct, text, round(100 * full / design)
+
+win, inner = window("battery", WIDTH, """
+.big, .big:backdrop { font-size: 26px; font-weight: 300; }
+""")
+pct_lbl = label("", "big", xalign=0)
+state_lbl = label("", "dim", xalign=0)
+inner.add(label("Batería", "title", xalign=0))
+inner.add(pct_lbl)
+inner.add(state_lbl)
+inner.add(label(f"Salud: {battery()[2]} % · {read('cycle_count')} ciclos", "dim", xalign=0))
+inner.add(Gtk.Separator())
+
+def update():
+    pct, text, _ = battery()
+    pct_lbl.set_text(f"{pct} %")
+    state_lbl.set_text(text)
+    return True  # seguir refrescando
+
+def fill():
+    current = run("powerprofilesctl", "get").strip()
+    ui.clear()
+    for key, text, icon in PROFILES:
+        ui.add_row(icon, text, key == current, key)
+
+def on_row(row):
+    run("powerprofilesctl", "set", row.data)
+    fill()
+
+ui = ListPopup(inner, "Modo de energía", None, None, on_row)
+update()
+fill()
+GLib.timeout_add_seconds(5, update)
+win.show_all()
+Gtk.main()

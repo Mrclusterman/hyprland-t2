@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+"""Captura rápida de ideas (Cmd+N), estilo Spotlight: escribir + Intro = se añade a ~/Obsidian/Ideas/Inbox.md.
+El mismo atajo o un clic fuera cierran sin guardar (mover el ratón no lo cierra, para no perder lo escrito)."""
+import datetime, os
+from barpopup import Gtk, GtkLayerShell, window, label, quit_
+
+INBOX = os.path.expanduser("~/Obsidian/Ideas/Inbox.md")
+WIDTH = 520
+
+win, inner = window("idea", WIDTH, """
+entry, entry:backdrop { font-size: 16px; padding: 8px 10px; border-radius: 10px; }
+""", top=160, close_on_leave=False)
+# Teclado exclusivo: se puede escribir nada más abrir. Namespace propio: hyprland.lua lo cierra al hacer clic fuera
+GtkLayerShell.set_keyboard_mode(win, GtkLayerShell.KeyboardMode.EXCLUSIVE)
+GtkLayerShell.set_namespace(win, "idea")
+
+def save(entry):
+    text = entry.get_text().strip()
+    if text:
+        os.makedirs(os.path.dirname(INBOX), exist_ok=True)
+        new = not os.path.exists(INBOX)
+        with open(INBOX, "a") as f:
+            if new:
+                f.write("# Inbox de ideas\n\n")
+            f.write(f"- {datetime.datetime.now():%Y-%m-%d %H:%M} · {text}\n")
+    quit_()
+
+inner.add(label("Nueva idea", "title", xalign=0))
+entry = Gtk.Entry(placeholder_text="Escribe y pulsa Intro…")
+entry.connect("activate", save)
+inner.add(entry)
+inner.add(label("Se guarda en Obsidian › Ideas › Inbox", "dim", xalign=0))
+win.show_all()
+entry.grab_focus()
+Gtk.main()

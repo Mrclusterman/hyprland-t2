@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+"""Popup Bluetooth estilo Centro de control de macOS, bajo el icono de waybar.
+Clic en un dispositivo = conectar/desconectar (empareja si es nuevo). Clic de nuevo en el icono o sacar el ratón = cerrar."""
+from barpopup import Gtk, GLib, sh, run, background, window, ListPopup
+
+WIDTH = 300
+SCAN_SECONDS = 8
+BT = "\U000f00af"
+
+def devices(*filter_):
+    """{MAC: nombre} de `bluetoothctl devices [Paired|Connected]`."""
+    out = run("bluetoothctl", "devices", *filter_)
+    return {p[1]: p[2] for p in (l.split(" ", 2) for l in out.splitlines()) if len(p) == 3 and p[0] == "Device"}
+
+def powered():
+    return "Powered: yes" in run("bluetoothctl", "show")
+
+def refresh(*_):
+    if not ui.toggle.get_active():
+        ui.clear("Bluetooth desactivado")
+        return
+    fill()
+    ui.busy(True)
+    # El escaneo tarda; mientras, se ven los emparejados
+    background(lambda: sh("bluetoothctl", "--timeout", str(SCAN_SECONDS), "scan", "on"),
+               lambda _: (ui.busy(False), fill()))
+
+def fill():
+    paired, connected, seen = devices("Paired"), devices("Connected"), devices()
+    ui.clear(None if seen else "No hay dispositivos")
+    if paired:
+        ui.section("Mis dispositivos")
+    for mac, name in paired.items():
+        ui.add_row(BT, name, mac in connected, (mac, True, mac in connected))
+    others = {m: n for m, n in seen.items() if m not in paired and n.replace("-", "") != m.replace(":", "")}
+    if others:
+        ui.section("Otros dispositivos")
+    for mac, name in others.items():
+        ui.add_row(BT, name, False, (mac, False, False))
+
+def on_row(row):
+    mac, paired, connected = row.data
+    if connected:
+        steps = [("disconnect", mac)]
+    elif paired:
+        steps = [("connect", mac)]
+    else:
+        steps = [("pair", mac), ("trust", mac), ("connect", mac)]
+    def work():
+        for step in steps:
+            r = sh("bluetoothctl", "--timeout", "15", *step)
+            if r.returncode:
+                return r
+        return None
+    def done(r):
+        ui.busy(False, (r.stdout or r.stderr).strip().split("\n")[-1][:120] if r else "")
+        fill()
+    ui.busy(True)
+    background(work, done)
+
+def on_toggle(on):
+    run("bluetoothctl", "power", "on" if on else "off")
+    GLib.timeout_add(500, refresh)
+
+win, inner = window("bluetooth", WIDTH)
+ui = ListPopup(inner, "Bluetooth", powered(), on_toggle, on_row)
+win.show_all()
+refresh()
+Gtk.main()

@@ -41,7 +41,7 @@ PACKAGES=(
   pipewire-pulse wireplumber apple-t2-audio-config networkmanager iwd bluez bluez-utils
   power-profiles-daemon pacman-contrib t2fanrd intel-media-driver fastfetch
   adwaita-fonts noto-fonts noto-fonts-emoji ttf-jetbrains-mono-nerd
-  discord obsidian mission-center thunderbird thunderbird-i18n-es-es
+  discord obsidian mission-center thunderbird thunderbird-i18n-es-es hunspell-es_es
 )
 
 # Los archivos de texto se guardan con @HOME@/@USER@ en vez de la ruta y el usuario reales, para que
@@ -103,6 +103,10 @@ install_all() {
   gsettings set org.gnome.desktop.wm.preferences button-layout 'close:'
   gsettings set org.gnome.nautilus.icon-view default-zoom-level 'small-plus'
   gsettings set org.gnome.nautilus.preferences fts-enabled false
+  # Mission Center: refresco cada 2 s (40 × 50 ms) y sin interfaces de red virtuales
+  gsettings set io.missioncenter.MissionCenter app-update-interval-u64 40
+  gsettings set io.missioncenter.MissionCenter app-update-interval 40
+  gsettings set io.missioncenter.MissionCenter performance-show-network-virtual false
   systemctl --user mask localsearch-3.service localsearch-control-3.service localsearch-writeback-3.service
   xdg-mime default org.gnome.Nautilus.desktop inode/directory
 

@@ -22,7 +22,8 @@ HOME_FILES=(
   .local/bin/barpopup.py .local/bin/bright-slider .local/bin/wifi-popup .local/bin/bt-popup
   .local/bin/battery-popup .local/bin/cal-popup .local/bin/system-menu .local/bin/idea-popup
   .local/bin/sleep-screen .local/bin/resume-screen .local/bin/charger-chime .local/bin/discord
-  .local/bin/shot-area .local/bin/ui-mem
+  .local/bin/shot-area .local/bin/ui-mem .local/bin/xwayland-ondemand
+  .config/systemd/user/xwayland-ondemand.socket .config/systemd/user/xwayland-ondemand.service
   .local/share/sounds/charger.wav .local/share/wallpapers/spiderman.jpg
   .local/share/applications/discord.desktop
 )
@@ -41,7 +42,7 @@ PACKAGES=(
   pipewire-pulse wireplumber apple-t2-audio-config networkmanager iwd bluez bluez-utils
   power-profiles-daemon pacman-contrib t2fanrd intel-media-driver fastfetch
   adwaita-fonts noto-fonts noto-fonts-emoji ttf-jetbrains-mono-nerd
-  discord obsidian mission-center thunderbird thunderbird-i18n-es-es hunspell-es_es
+  discord obsidian mission-center thunderbird thunderbird-i18n-es-es hunspell-es_es xwayland-satellite
 )
 
 # Los archivos de texto se guardan con @HOME@/@USER@ en vez de la ruta y el usuario reales, para que

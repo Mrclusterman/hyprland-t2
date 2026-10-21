@@ -39,6 +39,7 @@ try("env", function()
   hl.env("QT_QPA_PLATFORM", "wayland;xcb")
   hl.env("XDG_CONFIG_HOME", HOME .. "/.config")  -- sin ella el lanzador de Chrome ignora ~/.config/chrome-flags.conf
   hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")  -- apps Electron en Wayland nativo (nítidas con escala 1.6)
+  hl.env("DISPLAY", ":0")  -- pantalla X11 bajo demanda (xwayland-ondemand.socket), no la de Hyprland
 end)
 
 ---------------- AUTOSTART --------------
@@ -52,6 +53,8 @@ try("autostart", function()
     hl.exec_cmd("hypridle")
     hl.exec_cmd(HOME .. "/.local/bin/charger-chime")  -- sonido al enchufar el cargador
     hl.exec_cmd("/usr/lib/hyprpolkitagent/hyprpolkitagent")
+    -- Xwayland bajo demanda: arranca con la primera app X11 y se para tras 5 min sin ventanas X11
+    hl.exec_cmd("systemctl --user start xwayland-ondemand.socket")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme prefer-dark")
   end)
 end)
@@ -101,6 +104,11 @@ end)
 try("layer rules", function()
   hl.layer_rule({ match = { namespace = "barpopup" }, no_anim = true })
   hl.layer_rule({ match = { namespace = "idea" }, no_anim = true })
+end)
+
+-- Sin el Xwayland de Hyprland (siempre encendido): lo sustituye xwayland-satellite bajo demanda
+try("xwayland", function()
+  hl.config({ xwayland = { enabled = false } })
 end)
 
 try("misc", function()

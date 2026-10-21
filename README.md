@@ -13,6 +13,7 @@ It is built to use as little power as possible: no blur or shadows, and nothing 
 - **Login:** greetd logs straight into the session and hyprlock asks for the password. Type it and press Enter.
 - **Suspend fixed for the T2:** no phantom wake-ups, and the screen comes back only once the keyboard responds.
 - **Chime when the charger is plugged in.**
+- **Xwayland on demand:** Hyprland's always-on Xwayland is off. A systemd socket starts `xwayland-satellite` when an X11 app connects, and it stops itself after 5 minutes without X11 windows.
 - **Notifications** (mako) and macOS-style GTK4 apps.
 - **Spiral tiling (dwindle).** Focus follows clicks, not the mouse, and borders are 1 px.
 
@@ -49,6 +50,7 @@ To keep the repo up to date after changing something on the machine:
 | `home/.local/bin/*-popup`, `bright-slider`, `system-menu` | The bar popups |
 | `home/.local/bin/sleep-screen`, `resume-screen` | Turn the screen off on suspend and back on once the T2 keyboard returns |
 | `home/.local/bin/charger-chime` | Charger chime. Waits for udev events instead of polling |
+| `home/.local/bin/xwayland-ondemand`, `home/.config/systemd/user/xwayland-ondemand.*` | X11 display `:0` on demand (socket activation) and idle shutdown |
 | `home/.local/bin/discord` | Discord launcher (the official one hangs without zenity) on Wayland with GPU video |
 | `system/etc/greetd/` | Autologin with lock, and ReGreet as the login screen |
 | `system/etc/udev/rules.d/90-no-wakeup.rules`, `system/usr/lib/systemd/system-sleep/no-wifi-wakeup` | Suspend fix |

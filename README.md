@@ -62,6 +62,7 @@ To keep the repo up to date after changing something on the machine:
 | Cmd+Space | Spotlight (open and close) |
 | Cmd+E | Finder (Nautilus) |
 | Cmd+N | Quick note |
+| Cmd+M | Mail (Thunderbird): go to its window, or open it |
 | Cmd+Enter | Terminal (kitty) |
 | Cmd+B | Chrome |
 | Cmd+Q | Close window |

@@ -192,6 +192,9 @@ bind(mainMod .. " + space",         exec(launcher))   -- Spotlight
 bind(mainMod .. " + B",             exec("google-chrome-stable"))
 bind(mainMod .. " + E",             exec("nautilus --new-window"))   -- Finder
 bind(mainMod .. " + N",             exec(HOME .. "/.local/bin/idea-popup"))   -- nota rápida -> Obsidian/Ideas/Inbox.md
+-- Correo: ir a Thunderbird si ya está abierto (en cualquier escritorio); si no, abrirlo
+bind(mainMod .. " + M",             exec("hyprctl clients | grep -q 'class: org.mozilla.Thunderbird' && "
+  .. "hyprctl dispatch 'hl.dsp.focus({window = \"class:org.mozilla.Thunderbird\"})' || thunderbird"))
 bind(mainMod .. " + F",             function() return hl.dsp.window.fullscreen() end)
 bind(mainMod .. " + S",             function() return hl.dsp.workspace.toggle_special("magic") end)
 bind(mainMod .. " + SHIFT + M",     function() return hl.dsp.window.move({ workspace = "special:magic" }) end)

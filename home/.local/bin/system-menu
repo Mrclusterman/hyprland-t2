@@ -1,13 +1,23 @@
 #!/usr/bin/env python3
 """Menú del sistema (logo de Arch en la barra, estilo menú Apple): acerca de y apagado (los ajustes rápidos están en sus iconos).
 Apagar/Reiniciar/Cerrar sesión piden un segundo clic para confirmar."""
-import os, subprocess
+import json, os, subprocess
 from barpopup import Gtk, quit_, window, label
 
 WIDTH = 240
+
+
+def focus_or_launch(cls, cmd):
+    """Como en macOS: si la app ya está abierta, ir a su ventana (aunque esté en otro escritorio); si no, abrirla.
+    Las apps de instancia única solo piden activarse al relanzarlas y Hyprland lo ignora en otro escritorio."""
+    clients = json.loads(subprocess.run(["hyprctl", "clients", "-j"], capture_output=True, text=True).stdout or "[]")
+    if any(c["class"] == cls for c in clients):
+        return ["hyprctl", "dispatch", f'hl.dsp.focus({{window = "class:{cls}"}})']
+    return cmd
+
 ITEMS = [  # (texto, comando, confirmar); None = separador
     ("Acerca de este Mac", ["kitty", "--hold", "fastfetch"], False),
-    ("Monitor de actividad", ["missioncenter"], False),
+    ("Monitor de actividad", lambda: focus_or_launch("io.missioncenter.MissionCenter", ["missioncenter"]), False),
     None,
     ("Suspender", ["systemctl", "suspend"], False),
     ("Reiniciar…", ["systemctl", "reboot"], True),
@@ -23,7 +33,7 @@ def on_row(_, row):
         row.armed = True
         row.get_child().set_text(f"¿{text.rstrip('…')}? Clic otra vez")
         return
-    subprocess.Popen(cmd, start_new_session=True)
+    subprocess.Popen(cmd() if callable(cmd) else cmd, start_new_session=True)
     quit_()
 
 win, inner = window("menu", WIDTH)

@@ -41,7 +41,7 @@ PACKAGES=(
   pipewire-pulse wireplumber apple-t2-audio-config networkmanager iwd bluez bluez-utils
   power-profiles-daemon pacman-contrib t2fanrd intel-media-driver fastfetch
   adwaita-fonts noto-fonts noto-fonts-emoji ttf-jetbrains-mono-nerd
-  discord obsidian
+  discord obsidian mission-center thunderbird thunderbird-i18n-es-es
 )
 
 # Los archivos de texto se guardan con @HOME@/@USER@ en vez de la ruta y el usuario reales, para que

@@ -1,0 +1,13 @@
+#!/bin/sh
+# Lo arranca xwayland-ondemand.socket cuando una app X11 se conecta (fd 3 y 4 = sockets de :0).
+# Sale tras IDLE segundos sin ventanas X11; el socket sigue escuchando y la siguiente app lo vuelve a arrancar.
+IDLE=300
+xwayland-satellite :0 -listenfd 3 -listenfd 4 &
+sat=$!
+idle=0
+while kill -0 "$sat" 2>/dev/null; do
+  sleep 60
+  # Las ventanas X11 llegan a Hyprland como ventanas Wayland de xwayland-satellite (mismo PID)
+  if hyprctl clients -j | grep -q "\"pid\": $sat,"; then idle=0; else idle=$((idle + 60)); fi
+  if [ "$idle" -ge "$IDLE" ]; then kill "$sat"; wait "$sat"; exit 0; fi
+done

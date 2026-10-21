@@ -1,0 +1,10 @@
+# Pantalla X :0 bajo demanda: systemd escucha y arranca xwayland-ondemand.service cuando una app X11 se conecta.
+# Las apps X11 prueban primero el socket abstracto y luego el de /tmp/.X11-unix.
+[Unit]
+Description=Pantalla X11 :0 bajo demanda (xwayland-satellite)
+
+[Socket]
+ListenStream=@/tmp/.X11-unix/X0
+ListenStream=/tmp/.X11-unix/X0
+SocketMode=0777
+RemoveOnStop=yes

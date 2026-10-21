@@ -1,0 +1,6 @@
+[Unit]
+Description=Xwayland bajo demanda (xwayland-satellite); se para solo sin ventanas X11
+Requires=xwayland-ondemand.socket
+
+[Service]
+ExecStart=%h/.local/bin/xwayland-ondemand

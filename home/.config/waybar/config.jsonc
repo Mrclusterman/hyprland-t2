@@ -3,7 +3,7 @@
   "position": "top",
   "height": 28,
   "spacing": 4,
-  "modules-left": ["custom/menu", "hyprland/workspaces"],
+  "modules-left": ["custom/menu", "ext/workspaces"],
   "modules-center": ["hyprland/window"],
   "modules-right": ["wireplumber", "backlight", "custom/kbd", "bluetooth", "network", "battery", "tray", "clock"],
 
@@ -12,7 +12,9 @@
     "tooltip-format": "Menú del sistema",
     "on-click": "~/.local/bin/system-menu"
   },
-  "hyprland/workspaces": { "format": "{id}", "on-click": "activate", "disable-scroll": true },
+  // ext/workspaces (protocolo estándar ext-workspace) en vez de hyprland/workspaces: el clic de este último manda
+  // "dispatch workspace N", que Hyprland 0.56 con configuración Lua ya no acepta
+  "ext/workspaces": { "format": "{name}", "on-click": "activate", "sort-by-id": true },
   "hyprland/window": { "max-length": 48, "separate-outputs": true },
 
   "clock": {

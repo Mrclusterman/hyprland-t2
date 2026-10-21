@@ -7,7 +7,7 @@ from barpopup import Gtk, quit_, window, label
 WIDTH = 240
 ITEMS = [  # (texto, comando, confirmar); None = separador
     ("Acerca de este Mac", ["kitty", "--hold", "fastfetch"], False),
-    ("Monitor de actividad", ["mission-center"], False),
+    ("Monitor de actividad", ["missioncenter"], False),
     None,
     ("Suspender", ["systemctl", "suspend"], False),
     ("Reiniciar…", ["systemctl", "reboot"], True),

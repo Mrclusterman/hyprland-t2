@@ -49,6 +49,7 @@ To keep the repo up to date after changing something on the machine:
 | `home/.local/bin/barpopup.py` | Shared base for every popup: layer-shell window, styles and toggle list |
 | `home/.local/bin/*-popup`, `bright-slider`, `system-menu` | The bar popups |
 | `home/.local/bin/sleep-screen`, `resume-screen` | Turn the screen off on suspend and back on once the T2 keyboard returns |
+| `home/.local/bin/charger-check` | After resume, warns if the charger was connected before suspend and is gone after (a USB-C port that stopped charging); logs each cycle to `~/.local/state/charger-resume.log` |
 | `home/.local/bin/charger-chime` | Charger chime. Waits for udev events instead of polling |
 | `home/.local/bin/xwayland-ondemand`, `home/.config/systemd/user/xwayland-ondemand.*` | X11 display `:0` on demand (socket activation) and idle shutdown |
 | `home/.local/bin/discord` | Discord launcher (the official one hangs without zenity) on Wayland with GPU video |
@@ -80,6 +81,7 @@ To keep the repo up to date after changing something on the machine:
 - **Brightness:** `brightnessctl` always takes `-d acpi_video0`. Without it, it changes the Touch Bar.
 - **Suspend:** the Wi-Fi (`brcmfmac`) gets its wake-up permission back on every cycle. A systemd-sleep script removes it right before suspending.
 - **Keyboard on resume:** the T2 reconnects it about 0.5 s after waking. `resume-screen` waits for it before turning the screen on.
+- **USB-C charging after suspend:** once, after about 15 suspend cycles, one port stopped charging until a full power-off and an SMC reset (a reboot was not enough). Not documented on the t2linux wiki; `charger-check` detects it.
 - **Touch ID:** doesn't work on Linux, because the T2's Secure Enclave controls the sensor.
 
 ## License

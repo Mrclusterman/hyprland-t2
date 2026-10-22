@@ -1,0 +1,19 @@
+#!/bin/sh
+# Tras suspender (lo lanza resume-screen): si el cargador estaba conectado antes y al despertar no aparece en 10 s,
+# avisa. Fallo visto el 2026-10-21: un puerto USB-C dejó de cargar tras ~15 suspensiones y solo volvió con
+# apagado completo + reset del SMC. El registro sirve para saber tras cuántos ciclos falla.
+: "${XDG_RUNTIME_DIR:=/run/user/$(id -u)}"
+before=$(cat "${XDG_RUNTIME_DIR}/sleep-charger" 2>/dev/null || echo "?")
+adp=/sys/class/power_supply/ADP1/online
+for _ in $(seq 10); do  # la negociación de carga tarda un poco en volver tras despertar
+  [ "$(cat "${adp}")" = 1 ] && break
+  sleep 1
+done
+after=$(cat "${adp}")
+log="${XDG_STATE_HOME:-${HOME}/.local/state}/charger-resume.log"
+mkdir -p "$(dirname "${log}")"
+echo "$(date -Iseconds) antes=${before} después=${after}" >> "${log}"
+if [ "${before}" = 1 ] && [ "${after}" = 0 ]; then
+  notify-send -u critical "El cargador ha dejado de detectarse" \
+    "Estaba conectado antes de suspender. Si sigue enchufado, ese puerto ha vuelto a fallar: apaga del todo y resetea el SMC."
+fi

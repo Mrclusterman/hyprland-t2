@@ -4,3 +4,4 @@
 date +%s%N > "${XDG_RUNTIME_DIR}/sleep-start"
 loginctl lock-session
 hyprctl dispatch 'hl.dsp.dpms({action="off"})' >/dev/null
+cat /sys/class/power_supply/ADP1/online > "${XDG_RUNTIME_DIR}/sleep-charger"  # para charger-check

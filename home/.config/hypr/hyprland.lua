@@ -146,6 +146,41 @@ try("animaciones", function()
   hl.animation({ leaf = "workspaces", enabled = true, speed = 2.5, bezier = "quick", style = "fade" })
 end)
 
+-- Pantalla completa estilo macOS: la barra se oculta y aparece al llevar el ratón al borde de arriba.
+-- Waybar está en la capa overlay; USR1 = ocultar, USR2 = mostrar (waybar/config.jsonc), así que repetir la señal no la descoloca.
+-- El temporizador solo corre mientras hay pantalla completa: sin ella no hay sondeo.
+try("barra en pantalla completa", function()
+  local REVEAL, KEEP = 2, 40  -- px lógicos: aparece a <= 2 px del borde, se oculta al bajar de 40
+  local hidden = false
+  local function set_hidden(h)
+    if h ~= hidden then
+      hidden = h
+      hl.exec_cmd(h and "pkill -USR1 -x waybar" or "pkill -USR2 -x waybar")
+    end
+  end
+  local function fullscreen_monitor()
+    local ws = hl.get_active_workspace()
+    return ws and ws.has_fullscreen and ws.fullscreen_mode >= 2 and ws.monitor or nil
+  end
+  local poll = hl.timer(function()
+    local m, c = fullscreen_monitor(), hl.get_cursor_pos()
+    if not (m and c) then return end
+    local y = c.y - m.y
+    if hidden and y <= REVEAL then set_hidden(false)
+    elseif not hidden and y > KEEP then set_hidden(true) end
+  end, { timeout = 150, type = "repeat" })
+  local function refresh()
+    local fs = fullscreen_monitor() ~= nil
+    poll:set_enabled(fs)
+    set_hidden(fs)
+  end
+  poll:set_enabled(false)
+  for _, ev in ipairs({ "window.fullscreen", "window.active", "window.close", "workspace.active" }) do
+    hl.on(ev, refresh)
+  end
+  hidden = true; set_hidden(false)  -- al recargar, asegurar que la barra se ve
+end)
+
 ---------------- ENTRADA ----------------
 try("input", function()
   hl.config({

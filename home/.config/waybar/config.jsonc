@@ -1,5 +1,7 @@
 {
-  "layer": "top",
+  "layer": "overlay",  // encima de la pantalla completa; hyprland.lua la oculta y la muestra (estilo macOS)
+  "on-sigusr1": "hide",
+  "on-sigusr2": "show",  // sustituye a la recarga por SIGUSR2: para recargar, reiniciar waybar
   "position": "top",
   "height": 28,
   "spacing": 4,

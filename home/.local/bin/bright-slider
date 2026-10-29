@@ -33,7 +33,7 @@ win, inner = window(kind, WIDTH, """
 scale, scale:backdrop { padding: 0; margin: 0; min-height: 0; }
 scale trough, scale trough:backdrop {
   min-height: 28px; border-radius: 14px; border: none; box-shadow: none;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(0,0,0,0.16);
 }
 scale highlight, scale highlight:backdrop {
   min-height: 28px; border-radius: 14px; border: none; background: #f5f5f7;

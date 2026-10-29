@@ -5,7 +5,7 @@ local HOME     = os.getenv("HOME") or ""
 local mainMod  = "SUPER"
 local terminal = "kitty"
 local launcher = "pkill -x fuzzel || fuzzel"  -- mismo atajo abre y cierra (Esc está en la Touch Bar rota)
-local BLUR     = false   -- true = desenfoque de ventanas (mas bonito, mas GPU)
+local BLUR     = true    -- cristal estilo Liquid Glass; false = sin desenfoque (menos GPU)
 
 local function try(label, fn)
   local ok, err = pcall(fn)
@@ -83,8 +83,10 @@ try("decoration", function()
       rounding = 10,
       active_opacity = 1.0,
       inactive_opacity = 1.0,
-      shadow = { enabled = false },
-      blur = { enabled = BLUR, size = 3, passes = 1 },
+      shadow = { enabled = BLUR, range = 18, render_power = 3, color = "rgba(00000030)" },
+      -- xray: el desenfoque toma solo el fondo de pantalla (fijo) y se reutiliza en vez de recalcularse en cada fotograma
+      blur = { enabled = BLUR, size = 7, passes = 2, new_optimizations = true, xray = true,
+               noise = 0.02, brightness = 1.1, contrast = 0.9, vibrancy = 0.25 },
     },
   })
 end)
@@ -97,11 +99,20 @@ end)
 try("window rules", function()
   -- Ignorar peticiones de maximizar (kitty, etc.): si no, la ventana nueva ocupa toda la pantalla
   hl.window_rule({ name = "suppress-maximize-events", match = { class = ".*" }, suppress_event = "maximize" })
+  -- Sombra solo en flotantes: las de mosaico no la necesitan y así se ahorra GPU
+  hl.window_rule({ name = "no-shadow-tiled", match = { float = false }, no_shadow = true })
   hl.window_rule({ match = { class = "wifi-config" }, float = true, size = "720 520", center = true })
+  -- Emulador de Android (TrainSync): flotante y con forma de móvil, no en mosaico
+  hl.window_rule({ match = { class = "Emulator" }, float = true })
+  hl.window_rule({ match = { title = "Android Emulator.*" }, float = true, size = "470 960", center = true })
 end)
 
 -- Popups de brillo/volumen: sin animación
+-- Cristal en barra, Spotlight, avisos y popups; ignore_alpha: no desenfocar el borde totalmente transparente
 try("layer rules", function()
+  for _, ns in ipairs({ "waybar", "launcher", "notifications", "barpopup", "idea" }) do
+    hl.layer_rule({ match = { namespace = ns }, blur = BLUR, ignore_alpha = 0.2 })
+  end
   hl.layer_rule({ match = { namespace = "barpopup" }, no_anim = true })
   hl.layer_rule({ match = { namespace = "idea" }, no_anim = true })
 end)

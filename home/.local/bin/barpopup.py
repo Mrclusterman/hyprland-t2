@@ -11,25 +11,25 @@ PIDFILE = f"/run/user/{os.getuid()}/barpopup.pid"
 # Selectores también en :backdrop (el popup nunca tiene foco y Adwaita lo apagaría)
 BASE_CSS = """
 window, window:backdrop { background: transparent; }
-.panel { background: #242428; border: 1px solid rgba(255,255,255,0.12); border-radius: 18px; }
-.title, .title:backdrop { color: #f2f2f7; font-family: "Adwaita Sans"; font-size: 13px; font-weight: 700; }
+.panel { background: rgba(246,246,250,0.42); border: 1px solid rgba(255,255,255,0.6); border-radius: 18px; }
+.title, .title:backdrop { color: #1c1c1e; font-family: "Adwaita Sans"; font-size: 13px; font-weight: 700; }
 /* Popups con lista (wifi-popup, bt-popup) */
-label, label:backdrop { color: #f2f2f7; font-family: "Adwaita Sans"; font-size: 13px; }
-.dim, .dim:backdrop { color: #8e8e93; font-size: 12px; }
+label, label:backdrop { color: #1c1c1e; font-family: "Adwaita Sans"; font-size: 13px; }
+.dim, .dim:backdrop { color: #6e6e73; font-size: 12px; }
 .glyph, .glyph:backdrop { font-family: "JetBrainsMono Nerd Font Propo"; font-size: 14px; }
 .active .name, .active .name:backdrop { font-weight: 700; }
 .error, .error:backdrop { color: #ff453a; font-size: 12px; }
 list, list:backdrop { background: transparent; }
 row, row:backdrop { background: transparent; border-radius: 8px; padding: 6px 8px; outline: none; }
-row:hover { background: rgba(255,255,255,0.10); }
-separator { background: rgba(255,255,255,0.12); min-height: 1px; }
-switch, switch:backdrop { background: rgba(255,255,255,0.16); border: none; border-radius: 14px; box-shadow: none; }
+row:hover { background: rgba(0,0,0,0.10); }
+separator { background: rgba(0,0,0,0.12); min-height: 1px; }
+switch, switch:backdrop { background: rgba(0,0,0,0.16); border: none; border-radius: 14px; box-shadow: none; }
 switch:checked, switch:checked:backdrop { background: #0a84ff; }
 switch slider, switch slider:backdrop { background: #f5f5f7; border: none; border-radius: 12px; box-shadow: none; min-width: 20px; min-height: 20px; }
-entry, entry:backdrop { background: rgba(255,255,255,0.10); color: #f2f2f7; border: 1px solid rgba(255,255,255,0.16); border-radius: 8px; box-shadow: none; padding: 4px 8px; }
+entry, entry:backdrop { background: rgba(0,0,0,0.10); color: #1c1c1e; border: 1px solid rgba(0,0,0,0.16); border-radius: 8px; box-shadow: none; padding: 4px 8px; }
 button.flat, button.flat:backdrop { background: transparent; border: none; box-shadow: none; padding: 6px 8px; border-radius: 8px; }
-button.flat:hover { background: rgba(255,255,255,0.10); }
-spinner { color: #8e8e93; }
+button.flat:hover { background: rgba(0,0,0,0.10); }
+spinner { color: #6e6e73; }
 """
 
 def sh(*cmd):

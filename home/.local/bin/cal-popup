@@ -11,25 +11,25 @@ TODAY = datetime.date.today()
 win, inner = window("calendar", WIDTH, """
 .weekday, .weekday:backdrop { color: #ff453a; font-size: 12px; font-weight: 700; letter-spacing: 1px; }
 .bigday, .bigday:backdrop { font-size: 40px; font-weight: 300; }
-.sub, .sub:backdrop { color: #8e8e93; font-size: 13px; }
+.sub, .sub:backdrop { color: #6e6e73; font-size: 13px; }
 .month, .month:backdrop { font-size: 15px; font-weight: 700; }
-.year, .year:backdrop { color: #8e8e93; font-size: 15px; }
-.dow, .dow:backdrop { color: #8e8e93; font-size: 11px; font-weight: 700; }
+.year, .year:backdrop { color: #6e6e73; font-size: 15px; }
+.dow, .dow:backdrop { color: #6e6e73; font-size: 11px; font-weight: 700; }
 .week, .week:backdrop { color: rgba(142,142,147,0.55); font-size: 10px; }
-button.nav, button.nav:backdrop { background: transparent; border: none; box-shadow: none; color: #8e8e93;
+button.nav, button.nav:backdrop { background: transparent; border: none; box-shadow: none; color: #6e6e73;
   min-width: 24px; min-height: 24px; padding: 0; border-radius: 12px; }
-button.nav label { color: #8e8e93; font-size: 15px; }
-button.nav:hover { background: rgba(255,255,255,0.10); }
-button.nav:hover label { color: #f2f2f7; }
+button.nav label { color: #6e6e73; font-size: 15px; }
+button.nav:hover { background: rgba(0,0,0,0.10); }
+button.nav:hover label { color: #1c1c1e; }
 button.day, button.day:backdrop { background: transparent; border: none; box-shadow: none;
   min-width: 32px; min-height: 32px; padding: 0; border-radius: 16px; }
-button.day:hover { background: rgba(255,255,255,0.10); }
+button.day:hover { background: rgba(0,0,0,0.10); }
 button.day label { font-size: 13px; }
-button.weekend label { color: #8e8e93; }
+button.weekend label { color: #6e6e73; }
 button.other label { color: rgba(242,242,247,0.25); }
 button.today, button.today:backdrop, button.today:hover { background: #ff453a; }
 button.today label { color: #ffffff; font-weight: 700; }
-button.selected, button.selected:backdrop { background: rgba(255,255,255,0.16); }
+button.selected, button.selected:backdrop { background: rgba(0,0,0,0.16); }
 """)
 
 # Cabecera: hoy en grande (como el widget de macOS)

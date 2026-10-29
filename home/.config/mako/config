@@ -1,10 +1,10 @@
-# Notificaciones estilo macOS: tarjeta gris oscura redondeada arriba a la derecha, misma fuente que la barra
+# Notificaciones estilo macOS: tarjeta de cristal claro redondeada arriba a la derecha, misma fuente que la barra
 font=Adwaita Sans 11
-background-color=#2a2a2ef2
-text-color=#f2f2f7
-border-color=#ffffff1f
+background-color=#f5f5f88c
+text-color=#1c1c1e
+border-color=#ffffffb3
 border-size=1
-border-radius=16
+border-radius=18
 padding=12,14
 margin=10,10
 outer-margin=6

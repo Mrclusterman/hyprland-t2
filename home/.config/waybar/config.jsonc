@@ -7,7 +7,7 @@
   "spacing": 4,
   "modules-left": ["custom/menu", "ext/workspaces"],
   "modules-center": ["hyprland/window"],
-  "modules-right": ["wireplumber", "backlight", "custom/kbd", "bluetooth", "network", "battery", "tray", "clock"],
+  "modules-right": ["wireplumber", "backlight", "custom/kbd", "idle_inhibitor", "bluetooth", "network", "battery", "tray", "clock"],
 
   "custom/menu": {
     "format": "<span font_size='110%'>\uf303</span>",
@@ -72,6 +72,13 @@
     "format-icons": ["\uf244", "\uf243", "\uf242", "\uf241", "\uf240"],
     "tooltip-format": "{timeTo} (clic: batería y modo de energía)",
     "on-click": "~/.local/bin/battery-popup"
+  },
+  // café: inhibidor de Wayland; hypridle lo respeta y no apaga, bloquea ni suspende mientras esté activo
+  "idle_inhibitor": {
+    "format": "<span font_size='110%'>{icon}</span>",
+    "format-icons": { "activated": "\udb80\udd76", "deactivated": "\udb81\udeca" },
+    "tooltip-format-activated": "Café activo: no se suspenderá (clic para desactivar)",
+    "tooltip-format-deactivated": "Café (clic: evitar suspensión)"
   },
   "tray": { "spacing": 8 }
 }

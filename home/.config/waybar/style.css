@@ -14,9 +14,9 @@ window#waybar { background: rgba(246, 246, 250, 0.22); color: #1c1c1e; border-bo
 #workspaces button:hover  { color: #000000; background: rgba(255, 255, 255, 0.30); }
 
 #window { font-weight: 700; padding: 0 10px; }
-#clock, #wireplumber, #backlight, #custom-kbd, #bluetooth, #network, #battery, #tray { padding: 0 10px; }
+#clock, #idle_inhibitor, #wireplumber, #backlight, #custom-kbd, #bluetooth, #network, #battery, #tray { padding: 0 10px; }
 #battery.warning  { color: #c93400; }
 #battery.critical { color: #d70015; }
-#network.disconnected, #wireplumber.muted, #bluetooth.off, #bluetooth.disabled { color: #6e6e73; }
+#network.disconnected, #wireplumber.muted, #bluetooth.off, #bluetooth.disabled, #idle_inhibitor.deactivated { color: #6e6e73; }
 
 #custom-menu { padding: 0 12px 0 14px; color: #000000; }

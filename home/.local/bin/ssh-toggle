@@ -1,0 +1,13 @@
+#!/bin/bash
+# Botón SSH de waybar (custom/ssh). Sin argumento: el estado en JSON. Con "toggle": activa o desactiva sshd, también al
+# arrancar (enable/disable --now); la contraseña la pide hyprpolkitagent
+if [ "$1" = toggle ]; then
+  if systemctl is-active -q sshd; then systemctl disable --now sshd; else systemctl enable --now sshd; fi
+  pkill -RTMIN+9 waybar
+  exit
+fi
+if systemctl is-active -q sshd; then
+  echo '{"text":"SSH","class":"on","tooltip":"SSH activo (clic para desactivar)"}'
+else
+  echo '{"text":"SSH","class":"off","tooltip":"SSH apagado (clic para activar)"}'
+fi

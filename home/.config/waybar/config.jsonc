@@ -7,7 +7,7 @@
   "spacing": 4,
   "modules-left": ["custom/menu", "ext/workspaces"],
   "modules-center": ["hyprland/window"],
-  "modules-right": ["wireplumber", "backlight", "custom/kbd", "idle_inhibitor", "bluetooth", "network", "battery", "tray", "clock"],
+  "modules-right": ["wireplumber", "backlight", "custom/kbd", "idle_inhibitor", "custom/ssh", "bluetooth", "network", "battery", "tray", "clock"],
 
   "custom/menu": {
     "format": "<span font_size='110%'>\uf303</span>",
@@ -79,6 +79,15 @@
     "format-icons": { "activated": "\udb80\udd76", "deactivated": "\udb81\udeca" },
     "tooltip-format-activated": "Café activo: no se suspenderá (clic para desactivar)",
     "tooltip-format-deactivated": "Café (clic: evitar suspensión)"
+  },
+  // SSH: clic para activarlo o desactivarlo (pide la contraseña); señal 9 al cambiar, y cada 30 s por si cambia fuera
+  "custom/ssh": {
+    "exec": "~/.local/bin/ssh-toggle",
+    "return-type": "json",
+    "interval": 30,
+    "signal": 9,
+    "format": "<span font_size='110%'></span>",
+    "on-click": "~/.local/bin/ssh-toggle toggle"
   },
   "tray": { "spacing": 8 }
 }

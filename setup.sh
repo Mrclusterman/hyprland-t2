@@ -22,7 +22,7 @@ HOME_FILES=(
   .local/bin/barpopup.py .local/bin/bright-slider .local/bin/wifi-popup .local/bin/bt-popup
   .local/bin/battery-popup .local/bin/cal-popup .local/bin/system-menu .local/bin/idea-popup
   .local/bin/sleep-screen .local/bin/resume-screen .local/bin/charger-check .local/bin/charger-chime .local/bin/discord
-  .local/bin/shot-area .local/bin/ui-mem .local/bin/xwayland-ondemand
+  .local/bin/shot-area .local/bin/ui-mem .local/bin/xwayland-ondemand .local/bin/ssh-toggle
   .config/systemd/user/xwayland-ondemand.socket .config/systemd/user/xwayland-ondemand.service
   .local/share/sounds/charger.wav .local/share/wallpapers/spiderman.jpg
   .local/share/applications/discord.desktop

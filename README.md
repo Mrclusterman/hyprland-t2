@@ -7,6 +7,7 @@ It is built to use as little power as possible: no blur or shadows, and nothing 
 
 - **macOS-style top bar (waybar):** system menu with the Arch logo, window title in the centre and clock on the right.
   Each icon opens its own popup: volume, screen and keyboard brightness, Wi-Fi, Bluetooth, battery with power mode, and calendar.
+  The terminal icon turns SSH on or off (`ssh-toggle`, asks for the password; grey when off).
 - **Spotlight** (fuzzel) on Cmd+Space. It closes with the same shortcut or a click outside.
 - **Finder** (Nautilus) on Cmd+E. It runs without the `localsearch` indexer; closing the last window stops Nautilus and gvfs.
 - **Quick notes** on Cmd+N: whatever you type is appended to `~/Obsidian/Ideas/Inbox.md`.
@@ -48,6 +49,7 @@ To keep the repo up to date after changing something on the machine:
 | `home/.config/waybar/` | Bar and styles |
 | `home/.local/bin/barpopup.py` | Shared base for every popup: layer-shell window, styles and toggle list |
 | `home/.local/bin/*-popup`, `bright-slider`, `system-menu` | The bar popups |
+| `home/.local/bin/ssh-toggle` | SSH button in the bar: shows the state and runs `systemctl enable/disable --now sshd` |
 | `home/.local/bin/sleep-screen`, `resume-screen` | Turn the screen off on suspend and back on once the T2 keyboard returns |
 | `home/.local/bin/charger-check` | After resume, warns if the charger was connected before suspend and is gone after (a USB-C port that stopped charging); logs each cycle to `~/.local/state/charger-resume.log` |
 | `home/.local/bin/charger-chime` | Charger chime. Waits for udev events instead of polling |

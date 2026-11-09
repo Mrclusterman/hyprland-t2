@@ -231,6 +231,26 @@ try("nautilus quit", function()
   end)
 end)
 
+---------------- ESCRITORIOS SIN HUECOS --
+-- Numeración siempre seguida: sin el 1 y el 2, el 3 pasa a ser el 1; un escritorio nuevo en el 5 con solo el 1 ocupado pasa a ser el 2.
+-- Solo cambia el id: las ventanas, su disposición y el foco no se tocan. special:magic tiene id negativo y se queda fuera.
+try("escritorios sin huecos", function()
+  local function compact()
+    local ids = {}
+    for _, ws in ipairs(hl.get_workspaces()) do
+      if ws.id > 0 then ids[#ids + 1] = ws.id end
+    end
+    table.sort(ids)
+    for slot, id in ipairs(ids) do
+      if id ~= slot then hl.dispatch(hl.dsp.workspace.change_id({ workspace = tostring(id), id = slot })) end
+    end
+  end
+  -- Con temporizador porque durante el evento Hyprland aún está creando o retirando el escritorio
+  for _, ev in ipairs({ "workspace.created", "workspace.removed" }) do
+    hl.on(ev, function() hl.timer(compact, { timeout = 50, type = "oneshot" }) end)
+  end
+end)
+
 ---------------- ATAJOS -----------------
 bind(mainMod .. " + Return",        exec(terminal))
 bind(mainMod .. " + D",             exec(launcher))

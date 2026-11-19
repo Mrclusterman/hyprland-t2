@@ -7,7 +7,7 @@
   "spacing": 4,
   "modules-left": ["custom/menu", "ext/workspaces"],
   "modules-center": ["hyprland/window"],
-  "modules-right": ["wireplumber", "backlight", "custom/kbd", "idle_inhibitor", "custom/ssh", "bluetooth", "network", "battery", "tray", "clock"],
+  "modules-right": ["wireplumber", "backlight", "custom/kbd", "custom/cafe", "custom/ssh", "bluetooth", "network", "battery", "tray", "clock"],
 
   "custom/menu": {
     "format": "<span font_size='110%'>\uf303</span>",
@@ -73,12 +73,14 @@
     "tooltip-format": "{timeTo} (clic: batería y modo de energía)",
     "on-click": "~/.local/bin/battery-popup"
   },
-  // café: inhibidor de Wayland; hypridle lo respeta y no apaga, bloquea ni suspende mientras esté activo
-  "idle_inhibitor": {
-    "format": "<span font_size='110%'>{icon}</span>",
-    "format-icons": { "activated": "\udb80\udd76", "deactivated": "\udb81\udeca" },
-    "tooltip-format-activated": "Café activo: no se suspenderá (clic para desactivar)",
-    "tooltip-format-deactivated": "Café (clic: evitar suspensión)"
+  // café de tres estados (~/.local/bin/cafe-toggle): apagado, sin suspender (la pantalla se apaga) y café. Señal 10 al cambiar
+  "custom/cafe": {
+    "exec": "~/.local/bin/cafe-toggle",
+    "return-type": "json",
+    "interval": 30,
+    "signal": 10,
+    "format": "<span font_size='110%'>{}</span>",
+    "on-click": "~/.local/bin/cafe-toggle toggle"
   },
   // SSH: clic para activarlo o desactivarlo (pide la contraseña); señal 9 al cambiar, y cada 30 s por si cambia fuera
   "custom/ssh": {

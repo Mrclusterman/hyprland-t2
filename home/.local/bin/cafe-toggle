@@ -1,0 +1,36 @@
+#!/bin/bash
+# Café de waybar (custom/cafe), tres estados con un inhibidor de logind; cada clic pasa al siguiente:
+#   apagado -> sin suspender (--what=sleep: hypridle atenúa, bloquea y apaga la pantalla, pero no suspende)
+#   -> café (--what=idle:sleep: hypridle no hace nada) -> apagado
+# Sin argumento: el estado en JSON. "active": código 0 si no se debe suspender (lo usa hypridle; preguntar antes evita
+# que systemctl suspend pida la contraseña de saltarse el inhibidor). Cerrar la tapa sí suspende en cualquier estado.
+tag="cafe-toggle"
+# El estado se lee de logind (systemd-inhibit --list) y no con pgrep -f, que daba falsos positivos al lanzarlo waybar
+mine() { systemd-inhibit --list --no-legend | awk -v t="${tag}" '$1 == t { print $4, $6 }'; }  # PID y WHAT
+state() {
+  case "$(mine | awk '{ print $2; exit }')" in
+    *idle*) echo cafe ;;  # logind lo lista como sleep:idle
+    sleep) echo nosleep ;;
+    *) echo off ;;
+  esac
+}
+start() { setsid -f systemd-inhibit --what="$1" --who="${tag}" --why="Café de waybar" sleep infinity >/dev/null 2>&1; }
+stop() {
+  mine | while read -r pid _; do kill "${pid}"; done
+  for _ in $(seq 20); do [ "$(state)" = off ] && break; sleep 0.05; done  # esperar a que muera: si no, waybar aún lo ve
+}
+case "$1" in
+  active) [ "$(state)" != off ]; exit ;;
+  toggle)
+    case "$(state)" in
+      off) start sleep ;;
+      nosleep) stop; start idle:sleep ;;
+      cafe) stop ;;
+    esac
+    sleep 0.2; pkill -RTMIN+10 waybar; exit ;;
+esac
+case "$(state)" in
+  off) printf '{"text":"\U000F0FAB","class":"off","tooltip":"Café apagado (clic: no suspender)"}\n' ;;
+  nosleep) printf '{"text":"\U000F06CA","class":"nosleep","tooltip":"No se suspende; la pantalla sí se apaga (clic: café)"}\n' ;;
+  cafe) printf '{"text":"\U000F0176","class":"cafe","tooltip":"Café: ni se apaga la pantalla ni se suspende (clic: apagar)"}\n' ;;
+esac
